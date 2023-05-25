@@ -98,7 +98,7 @@ class App {
 
         const coords = [latitude, longitude];
 
-        this.#map = L.map('map').setView(coords, 13);
+        this.#map = L.map('map').setView(coords, 14);
 
         L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             attribution:
@@ -182,7 +182,7 @@ class App {
         this._hideForm();
     };
 
-    _renderWorkoutMarker(workout) {
+    _renderWorkoutMarker = workout => {
         L.marker(workout.coords)
             .addTo(this.#map)
             .bindPopup(
@@ -200,9 +200,9 @@ class App {
                 }`,
             )
             .openPopup();
-    }
+    };
 
-    _renderWorkout(workout) {
+    _renderWorkout = workout => {
         let html = `
             <li 
             class="workout workout--${workout.type}" data-id="${workout.id}"
@@ -259,7 +259,24 @@ class App {
         }
 
         form.insertAdjacentHTML('afterend', html);
-    }
+    };
+
+    _moveToPopup = e => {
+        const workoutEl = e.target.closest('.workout');
+
+        if (!workoutEl) return;
+
+        const workout = this.#workouts.find(
+            work => work.id === workoutEl.dataset.id,
+        );
+
+        this.#map.setView(workout.coords, 15, {
+            animate: true,
+            pan: {
+                duration: 1,
+            },
+        });
+    };
 }
 
 const app = new App();
